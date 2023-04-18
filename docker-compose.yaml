@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+#      - mongo
+#      - redis
+#      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/companymanager
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: example
+
+#      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/companymanager
+#      SPRING_REDIS_HOST: redis
+#      SPRING_RABBITMQ_HOST: rabbitmq
+    networks:
+      - companymanager
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: companymanager
+    networks:
+      - companymanager
+
+#  mongo:
+#    image: mongo
+#    networks:
+#      - companymanager
+#
+#  redis:
+#    image: redis
+#    networks:
+#      - companymanager
+#
+#  rabbitmq:
+#    image: rabbitmq
+#    networks:
+#      - companymanager
+#
+networks:
+  companymanager:
+    driver: bridge
