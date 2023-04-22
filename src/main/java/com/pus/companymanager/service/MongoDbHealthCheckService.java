@@ -14,12 +14,15 @@ public class MongoDbHealthCheckService {
     @Value("${spring.data.mongodb.port}")
     private String mongoPort;
 
+    @Value("${spring.data.mongodb.host}")
+    private String mongoHost;
+
     private final RestTemplate restTemplate;
 
     public String checkHealth() {
         System.out.println(">> Mongo health check START");
 
-        String url = "http://mongo:" + mongoPort;
+        String url = "http://" + mongoHost + ":" + mongoPort;
         HttpStatusCode httpStatus;
 
         try {

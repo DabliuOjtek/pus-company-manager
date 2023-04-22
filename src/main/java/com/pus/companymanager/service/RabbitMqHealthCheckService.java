@@ -17,6 +17,9 @@ public class RabbitMqHealthCheckService {
     @Value("${spring.rabbitmq.port}")
     private String rabbitPort;
 
+    @Value("${spring.rabbitmq.host}")
+    private String rabbitHost;
+
     @Value("${spring.rabbitmq.username}")
     private String rabbitUsername;
 
@@ -29,7 +32,7 @@ public class RabbitMqHealthCheckService {
     public String checkHealth() {
         System.out.println(">> RabbitMq health check START");
 
-        String url = "http://rabbitmq:" + rabbitPort + ENDPOINT;
+        String url = "http://" + rabbitHost + ":" + rabbitPort + ENDPOINT;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(rabbitUsername, rabbitPassword);
