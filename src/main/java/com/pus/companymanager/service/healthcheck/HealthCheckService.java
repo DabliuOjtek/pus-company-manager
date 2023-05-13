@@ -1,4 +1,4 @@
-package com.pus.companymanager.service;
+package com.pus.companymanager.service.healthcheck;
 
  import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

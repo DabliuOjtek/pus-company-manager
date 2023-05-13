@@ -1,4 +1,4 @@
-package com.pus.companymanager.service;
+package com.pus.companymanager.service.healthcheck;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
