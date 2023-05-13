@@ -1,8 +1,10 @@
 package com.pus.companymanager.dto.authorization;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class Confirmation {
+@AllArgsConstructor
+public class ConfirmationDTO {
     private String code;
 }

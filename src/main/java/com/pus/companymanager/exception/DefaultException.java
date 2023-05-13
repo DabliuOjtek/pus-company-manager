@@ -1,4 +1,4 @@
-package com.pus.companymanager.dto.exception;
+package com.pus.companymanager.exception;
 
 import lombok.Getter;
 

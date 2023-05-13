@@ -1,8 +1,8 @@
 package com.pus.companymanager.controller;
 
 
-import com.pus.companymanager.dto.exception.DefaultException;
-import com.pus.companymanager.dto.exception.ExceptionBody;
+import com.pus.companymanager.exception.DefaultException;
+import com.pus.companymanager.exception.ExceptionBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

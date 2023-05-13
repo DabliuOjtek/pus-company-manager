@@ -1,22 +1,36 @@
 package com.pus.companymanager.service.authorization;
 
+import com.pus.companymanager.dto.authorization.ConfirmationDTO;
 import com.pus.companymanager.dto.user.UserDTO;
+import com.pus.companymanager.exception.DefaultException;
+import com.pus.companymanager.model.user.Confirmation;
+import com.pus.companymanager.model.user.User;
+import com.pus.companymanager.repository.user.ConfirmationRepository;
 import com.pus.companymanager.repository.user.UserRepository;
-import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Random;
+
 @Service
+@AllArgsConstructor
 public class AuthorizationService {
 
     private final UserRepository userRepository;
+    private final ConfirmationRepository confirmationRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public  registerUserAsInactive(UserDTO registrationData) {
-        if(isEmailUnique(registrationData.getEmail())){
-            //register
-            return
+    public ConfirmationDTO registerUserAsInactive(UserDTO registrationData) {
+        if (isEmailUnique(registrationData.getEmail())) {
+            User newUser = mapUserDTOToUser(registrationData);
+            userRepository.save(newUser);
+            return createConfirmCode(newUser);
         } else {
+            throw new DefaultException("User already exists");
         }
     }
 
@@ -24,7 +38,42 @@ public class AuthorizationService {
         return userRepository.existsByEmail(email);
     }
 
-    private registerUser() {
+    private User mapUserDTOToUser(UserDTO registrationData) {
+        return User.builder()
+                .email(registrationData.getEmail())
+                .password(passwordEncoder.encode(registrationData.getPassword()))
+                .firstName(registrationData.getFirstName())
+                .lastName(registrationData.getLastName())
+                .country(registrationData.getCountry())
+                .city(registrationData.getCity())
+                .street(registrationData.getStreet())
+                .zipCode(registrationData.getZipCode())
+                .build();
+    }
 
+    private ConfirmationDTO createConfirmCode(User newUser) {
+        Confirmation confirmation = Confirmation.builder()
+                .user(newUser)
+                .confirmCode(String.format("%04d", new Random().nextInt(10000)))
+                .expireDate(LocalDateTime.now().plusMinutes(10L))
+                .build();
+        confirmationRepository.save(confirmation);
+
+        return new ConfirmationDTO(confirmation.getConfirmCode());
+    }
+
+    public void confirmRegistration(ConfirmationDTO confirmation) {
+        Confirmation confirm = confirmationRepository.getConfirmationByConfirmCode(confirmation.getCode())
+                .orElseThrow(() -> new DefaultException("Wrong confirm code"));
+
+        if (confirm.getExpireDate().isAfter(LocalDateTime.now())) {
+            confirmationRepository.delete(confirm);
+            throw new DefaultException("Confirm code is expired");
+        }
+
+        User userToActive = confirm.getUser();
+        userToActive.setActive(true);
+        userRepository.save(userToActive);
+        confirmationRepository.delete(confirm);
     }
 }
