@@ -8,12 +8,15 @@ import com.pus.companymanager.model.user.User;
 import com.pus.companymanager.repository.user.ConfirmationRepository;
 import com.pus.companymanager.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -30,8 +33,23 @@ public class AuthorizationService {
             userRepository.save(newUser);
             return createConfirmCode(newUser);
         } else {
-            throw new DefaultException("User already exists");
+            throw new DefaultException("Nie można utworzyć użytkownika");
         }
+    }
+
+    public void confirmRegistration(ConfirmationDTO confirmation) {
+        Confirmation confirm = confirmationRepository.getConfirmationByConfirmCode(confirmation.getCode())
+                .orElseThrow(() -> new DefaultException("Kod nie istnieje lub wygasł"));
+
+        if (confirm.getExpireDate().isAfter(LocalDateTime.now())) {
+            confirmationRepository.delete(confirm);
+            throw new DefaultException("Kod nie istnieje lub wygasł");
+        }
+
+        User userToActive = confirm.getUser();
+        userToActive.setActive(true);
+        userRepository.save(userToActive);
+        confirmationRepository.delete(confirm);
     }
 
     private boolean isEmailUnique(String email) {
@@ -54,7 +72,7 @@ public class AuthorizationService {
     private ConfirmationDTO createConfirmCode(User newUser) {
         Confirmation confirmation = Confirmation.builder()
                 .user(newUser)
-                .confirmCode(String.format("%04d", new Random().nextInt(10000)))
+                .confirmCode(RandomStringUtils.randomAlphanumeric(6))
                 .expireDate(LocalDateTime.now().plusMinutes(10L))
                 .build();
         confirmationRepository.save(confirmation);
@@ -62,18 +80,5 @@ public class AuthorizationService {
         return new ConfirmationDTO(confirmation.getConfirmCode());
     }
 
-    public void confirmRegistration(ConfirmationDTO confirmation) {
-        Confirmation confirm = confirmationRepository.getConfirmationByConfirmCode(confirmation.getCode())
-                .orElseThrow(() -> new DefaultException("Wrong confirm code"));
 
-        if (confirm.getExpireDate().isAfter(LocalDateTime.now())) {
-            confirmationRepository.delete(confirm);
-            throw new DefaultException("Confirm code is expired");
-        }
-
-        User userToActive = confirm.getUser();
-        userToActive.setActive(true);
-        userRepository.save(userToActive);
-        confirmationRepository.delete(confirm);
-    }
 }
