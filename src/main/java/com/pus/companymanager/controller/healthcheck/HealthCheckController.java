@@ -1,6 +1,6 @@
-package com.pus.companymanager.controller;
+package com.pus.companymanager.controller.healthcheck;
 
-import com.pus.companymanager.service.HealthCheckService;
+import com.pus.companymanager.service.healthcheck.HealthCheckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
