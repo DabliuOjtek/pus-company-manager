@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "confirmations")
 public class Confirmation {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

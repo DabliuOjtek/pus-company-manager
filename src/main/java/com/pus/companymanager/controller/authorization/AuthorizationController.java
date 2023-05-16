@@ -17,7 +17,7 @@ public class AuthorizationController {
 
     private final AuthorizationService authorizationService;
 
-    @PostMapping("registration/confirm")
+    @PostMapping("registration")
     public ConfirmationDTO registerUser(@RequestBody @Valid UserDTO registrationData) {
         return authorizationService.registerUserAsInactive(registrationData);
     }

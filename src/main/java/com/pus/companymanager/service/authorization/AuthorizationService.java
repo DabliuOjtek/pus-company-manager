@@ -9,14 +9,11 @@ import com.pus.companymanager.repository.user.ConfirmationRepository;
 import com.pus.companymanager.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.Random;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -24,7 +21,7 @@ public class AuthorizationService {
 
     private final UserRepository userRepository;
     private final ConfirmationRepository confirmationRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public ConfirmationDTO registerUserAsInactive(UserDTO registrationData) {
@@ -53,7 +50,7 @@ public class AuthorizationService {
     }
 
     private boolean isEmailUnique(String email) {
-        return userRepository.existsByEmail(email);
+        return !userRepository.existsByEmail(email);
     }
 
     private User mapUserDTOToUser(UserDTO registrationData) {
