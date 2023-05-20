@@ -46,7 +46,7 @@ public class AuthorizationService {
         Confirmation confirm = confirmationRepository.getConfirmationByConfirmCode(confirmation.getCode())
                 .orElseThrow(() -> new DefaultException("Kod nie istnieje lub wygasł"));
 
-        if (confirm.getExpireDate().isAfter(LocalDateTime.now())) {
+        if (LocalDateTime.now().isAfter(confirm.getExpireDate())) {
             confirmationRepository.delete(confirm);
             throw new DefaultException("Kod nie istnieje lub wygasł");
         }
