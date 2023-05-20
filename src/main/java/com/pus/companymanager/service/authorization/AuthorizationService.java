@@ -1,6 +1,9 @@
 package com.pus.companymanager.service.authorization;
 
+import com.pus.companymanager.configuration.security.JWTUtils;
 import com.pus.companymanager.dto.authorization.ConfirmationDTO;
+import com.pus.companymanager.dto.authorization.JWTokenDTO;
+import com.pus.companymanager.dto.user.UserAuthDTO;
 import com.pus.companymanager.dto.user.UserDTO;
 import com.pus.companymanager.exception.DefaultException;
 import com.pus.companymanager.model.user.Confirmation;
@@ -9,6 +12,9 @@ import com.pus.companymanager.repository.user.ConfirmationRepository;
 import com.pus.companymanager.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +28,8 @@ public class AuthorizationService {
     private final UserRepository userRepository;
     private final ConfirmationRepository confirmationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtils jwtUnits;
 
     @Transactional
     public ConfirmationDTO registerUserAsInactive(UserDTO registrationData) {
@@ -47,6 +55,19 @@ public class AuthorizationService {
         userToActive.setActive(true);
         userRepository.save(userToActive);
         confirmationRepository.delete(confirm);
+    }
+
+    public JWTokenDTO authenticateAndGetToken(UserAuthDTO userAuthDTO){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                userAuthDTO.getEmail(), userAuthDTO.getPassword()
+        ));
+        String accessToken = jwtUnits.generateToken(authentication);
+        String refreshToken = jwtUnits.generateToken(authentication);
+        return new JWTokenDTO(accessToken, refreshToken);
+    }
+
+    public JWTokenDTO refreshToken(String refreshToken) {
+        return null;
     }
 
     private boolean isEmailUnique(String email) {
@@ -76,6 +97,5 @@ public class AuthorizationService {
 
         return new ConfirmationDTO(confirmation.getConfirmCode());
     }
-
 
 }
