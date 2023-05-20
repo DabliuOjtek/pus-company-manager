@@ -10,12 +10,14 @@ import com.pus.companymanager.model.user.Confirmation;
 import com.pus.companymanager.model.user.User;
 import com.pus.companymanager.repository.user.ConfirmationRepository;
 import com.pus.companymanager.repository.user.UserRepository;
+import com.pus.companymanager.service.authorization.user.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ public class AuthorizationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTUtils jwtUnits;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public ConfirmationDTO registerUserAsInactive(UserDTO registrationData) {
@@ -62,8 +65,13 @@ public class AuthorizationService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userAuthDTO.getEmail(), userAuthDTO.getPassword()
         ));
+        User user = userRepository.findByEmail(userAuthDTO.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Błędne dane uwierzytelniające"));
+
+        String uuid = refreshTokenService.saveUserRefreshTokenAndReturnUUID(user);
         String accessToken = jwtUnits.generateAccessToken(authentication);
-        String refreshToken = jwtUnits.generateRefreshToken(authentication);
+        String refreshToken = jwtUnits.generateRefreshTokenForUUID(uuid);
+
         return new JWTokenDTO(accessToken, refreshToken);
     }
 

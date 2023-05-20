@@ -32,10 +32,9 @@ public class JWTUtils {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String generateRefreshToken(Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    public String generateRefreshTokenForUUID(String uuid) {
         return JWT.create()
-                .withSubject(userDetails.getUsername())
+                .withSubject(uuid)
                 .withExpiresAt(new Date(System.currentTimeMillis() + expireRefreshToken))
                 .sign(Algorithm.HMAC256(secret));
     }
