@@ -2,6 +2,7 @@ package com.pus.companymanager.controller.authorization;
 
 import com.pus.companymanager.dto.authorization.ConfirmationDTO;
 import com.pus.companymanager.dto.authorization.JWTokenDTO;
+import com.pus.companymanager.dto.user.RefreshTokenDTO;
 import com.pus.companymanager.dto.user.UserAuthDTO;
 import com.pus.companymanager.dto.user.UserDTO;
 import com.pus.companymanager.service.authorization.AuthorizationService;
@@ -38,7 +39,7 @@ public class AuthorizationController {
     }
 
     @PostMapping("refresh")
-    public JWTokenDTO refreshToken(@Valid @RequestBody String refreshToken) {
-        return authorizationService.refreshToken(refreshToken);
+    public JWTokenDTO refreshToken(@Valid @RequestBody RefreshTokenDTO refreshToken) {
+        return authorizationService.refreshToken(refreshToken.getRefreshToken());
     }
 }

@@ -1,5 +1,7 @@
 package com.pus.companymanager.service.authorization;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.pus.companymanager.configuration.security.JWTUtils;
 import com.pus.companymanager.dto.authorization.ConfirmationDTO;
 import com.pus.companymanager.dto.authorization.JWTokenDTO;
@@ -16,7 +18,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,21 +63,37 @@ public class AuthorizationService {
     }
 
     public JWTokenDTO authenticateAndGetToken(UserAuthDTO userAuthDTO) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userAuthDTO.getEmail(), userAuthDTO.getPassword()
         ));
         User user = userRepository.findByEmail(userAuthDTO.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Błędne dane uwierzytelniające"));
 
-        String uuid = refreshTokenService.saveUserRefreshTokenAndReturnUUID(user);
-        String accessToken = jwtUnits.generateAccessToken(authentication);
-        String refreshToken = jwtUnits.generateRefreshTokenForUUID(uuid);
-
-        return new JWTokenDTO(accessToken, refreshToken);
+        return generateTokensForUser(user);
     }
 
     public JWTokenDTO refreshToken(String refreshToken) {
-        return null;
+        DecodedJWT verifiedToken;
+        try {
+            verifiedToken = jwtUnits.verifyToken(refreshToken);
+        } catch (TokenExpiredException e) {
+            throw new DefaultException("Błędny lub przedawniony token", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (verifiedToken != null) {
+            User user = refreshTokenService.findUserByUUID(verifiedToken.getSubject());
+            return generateTokensForUser(user);
+        } else {
+            throw new DefaultException("Błędny lub przedawniony token", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private JWTokenDTO generateTokensForUser(User user) {
+        String uuid = refreshTokenService.saveUserRefreshTokenAndReturnUUID(user);
+        String accessToken = jwtUnits.generateAccessToken(user.getEmail());
+        String refreshToken = jwtUnits.generateRefreshTokenForUUID(uuid);
+
+        return new JWTokenDTO(accessToken, refreshToken);
     }
 
     private boolean isEmailUnique(String email) {

@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -24,10 +23,9 @@ public class JWTUtils {
     @Value("${app.jwt.jwtRefreshExpire}")
     private int expireRefreshToken;
 
-    public String generateAccessToken(Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    public String generateAccessToken(String username) {
         return JWT.create()
-                .withSubject(userDetails.getUsername())
+                .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + expireAccessToken))
                 .sign(Algorithm.HMAC256(secret));
     }
@@ -41,11 +39,12 @@ public class JWTUtils {
 
     public DecodedJWT verifyToken(String token) {
         DecodedJWT verifiedToken = null;
-        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
+        token = token.replace("Bearer ", "");
+        if (StringUtils.hasText(token)) {
             try {
                 verifiedToken = JWT.require(Algorithm.HMAC256(secret))
                         .build()
-                        .verify(token.replace("Bearer ", ""));
+                        .verify(token);
             } catch (TokenExpiredException ex) {
                 throw ex;
             } catch (JWTVerificationException ex) {
