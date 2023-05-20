@@ -61,8 +61,8 @@ public class AuthorizationService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userAuthDTO.getEmail(), userAuthDTO.getPassword()
         ));
-        String accessToken = jwtUnits.generateToken(authentication);
-        String refreshToken = jwtUnits.generateToken(authentication);
+        String accessToken = jwtUnits.generateAccessToken(authentication);
+        String refreshToken = jwtUnits.generateRefreshToken(authentication);
         return new JWTokenDTO(accessToken, refreshToken);
     }
 
