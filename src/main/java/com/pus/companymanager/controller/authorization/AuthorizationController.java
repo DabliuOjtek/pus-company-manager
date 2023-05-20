@@ -22,7 +22,7 @@ public class AuthorizationController {
     private final AuthorizationService authorizationService;
 
     @PostMapping("registration")
-    public  ResponseEntity<ConfirmationDTO> registerUser(@RequestBody @Valid UserDTO registrationData) {
+    public ResponseEntity<ConfirmationDTO> registerUser(@RequestBody @Valid UserDTO registrationData) {
         ConfirmationDTO confirmation = authorizationService.registerUserAsInactive(registrationData);
         return new ResponseEntity<>(confirmation, HttpStatus.CREATED);
     }

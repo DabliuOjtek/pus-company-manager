@@ -3,7 +3,6 @@ package com.pus.companymanager.configuration.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +22,12 @@ public class WebSecurityConfig {
 
     private final AuthEntryPoint authEntryPoint;
     private final AuthTokenFilter authTokenFilter;
-    private final CustomLogoutHandler customLogoutHandler;
+
+    private static final String[] AUTH_WHITELIST = {
+            "/auth/registration/**",
+            "/auth/login",
+            "/auth/refresh"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,14 +37,17 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.cors().and().csrf().disable()
-                .authorizeHttpRequests(this::configHttp)
+                .authorizeHttpRequests(request -> {
+                    request.requestMatchers(AUTH_WHITELIST).permitAll()
+                            .anyRequest().authenticated();
+                    configHttp(request);
+                })
                 .build();
     }
 
     private LogoutConfigurer<HttpSecurity> configHttp(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authz) {
         try {
             return authz
-                    .anyRequest().permitAll()
                     .and()
                     .exceptionHandling().authenticationEntryPoint(authEntryPoint)
                     .and()
@@ -49,10 +55,7 @@ public class WebSecurityConfig {
                     .and()
                     .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                     .formLogin().disable()
-                    .logout()
-                    .logoutUrl("/logout")
-                    .addLogoutHandler(customLogoutHandler)
-                    .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK));
+                    .logout();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
