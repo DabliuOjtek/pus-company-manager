@@ -12,6 +12,7 @@ import com.pus.companymanager.repository.user.ConfirmationRepository;
 import com.pus.companymanager.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,17 +39,17 @@ public class AuthorizationService {
             userRepository.save(newUser);
             return createConfirmCode(newUser);
         } else {
-            throw new DefaultException("Nie można utworzyć użytkownika");
+            throw new DefaultException("Nie można utworzyć użytkownika", HttpStatus.BAD_REQUEST);
         }
     }
 
     public void confirmRegistration(ConfirmationDTO confirmation) {
         Confirmation confirm = confirmationRepository.getConfirmationByConfirmCode(confirmation.getCode())
-                .orElseThrow(() -> new DefaultException("Kod nie istnieje lub wygasł"));
+                .orElseThrow(() -> new DefaultException("Kod nie istnieje lub wygasł", HttpStatus.NOT_FOUND));
 
         if (LocalDateTime.now().isAfter(confirm.getExpireDate())) {
             confirmationRepository.delete(confirm);
-            throw new DefaultException("Kod nie istnieje lub wygasł");
+            throw new DefaultException("Kod nie istnieje lub wygasł", HttpStatus.NOT_FOUND);
         }
 
         User userToActive = confirm.getUser();
@@ -57,7 +58,7 @@ public class AuthorizationService {
         confirmationRepository.delete(confirm);
     }
 
-    public JWTokenDTO authenticateAndGetToken(UserAuthDTO userAuthDTO){
+    public JWTokenDTO authenticateAndGetToken(UserAuthDTO userAuthDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userAuthDTO.getEmail(), userAuthDTO.getPassword()
         ));

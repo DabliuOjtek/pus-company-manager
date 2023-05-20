@@ -14,8 +14,8 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DefaultException.class)
     protected ResponseEntity<ExceptionBody> handleDefaultException(DefaultException ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ExceptionBody body = new ExceptionBody(status.value(), status.getReasonPhrase(), ex.getErrors());
+        ExceptionBody body = new ExceptionBody(ex.getStatus().value(), ex.getStatus().getReasonPhrase(), ex.getErrors());
         return new ResponseEntity<>(body, HttpStatus.valueOf(body.getStatus()));
     }
+
 }
