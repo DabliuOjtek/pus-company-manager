@@ -22,5 +22,5 @@ CREATE TABLE confirmations
 CREATE TABLE refresh_tokens
 (
     uuid         TEXT PRIMARY KEY,
-    user_id      INTEGER   NOT NULL REFERENCES users (id),
+    user_id      INTEGER   NOT NULL REFERENCES users (id)
 );
