@@ -24,9 +24,11 @@ public class WebSecurityConfig {
     private final AuthTokenFilter authTokenFilter;
 
     private static final String[] AUTH_WHITELIST = {
-            "/auth/registration/**",
+            "/auth/registration",
+            "/auth/registration/confirm",
             "/auth/login",
-            "/auth/refresh"
+            "/auth/refresh",
+            "/health"
     };
 
     @Bean

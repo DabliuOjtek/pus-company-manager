@@ -39,8 +39,8 @@ public class JWTUtils {
 
     public DecodedJWT verifyToken(String token) {
         DecodedJWT verifiedToken = null;
-        token = token.replace("Bearer ", "");
         if (StringUtils.hasText(token)) {
+            token = token.replace("Bearer ", "");
             try {
                 verifiedToken = JWT.require(Algorithm.HMAC256(secret))
                         .build()
