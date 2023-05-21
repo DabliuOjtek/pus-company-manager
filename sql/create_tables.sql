@@ -18,3 +18,9 @@ CREATE TABLE confirmations
     confirm_code TEXT      NOT NULL,
     expire_date  TIMESTAMP NOT NULL
 );
+
+CREATE TABLE refresh_tokens
+(
+    uuid         TEXT PRIMARY KEY,
+    user_id      INTEGER   NOT NULL REFERENCES users (id)
+);

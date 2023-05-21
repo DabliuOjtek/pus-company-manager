@@ -1,13 +1,12 @@
 package com.pus.companymanager.repository.user;
 
+import com.pus.companymanager.model.user.RefreshToken;
 import com.pus.companymanager.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
-    boolean existsByEmail(String email);
-    Optional<User> findByEmail(String email);
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
+
+    void deleteByUser(User user);
 }
