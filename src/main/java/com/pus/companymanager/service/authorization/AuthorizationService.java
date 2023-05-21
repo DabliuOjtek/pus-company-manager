@@ -88,7 +88,7 @@ public class AuthorizationService {
         }
     }
 
-    private JWTokenDTO generateTokensForUser(User user) {
+    public JWTokenDTO generateTokensForUser(User user) {
         String uuid = refreshTokenService.saveUserRefreshTokenAndReturnUUID(user);
         String accessToken = jwtUnits.generateAccessToken(user.getEmail());
         String refreshToken = jwtUnits.generateRefreshTokenForUUID(uuid);
