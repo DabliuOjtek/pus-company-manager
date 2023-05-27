@@ -1,8 +1,8 @@
 CREATE TABLE users
 (
-    id         SERIAL PRIMARY KEY,
-    email      TEXT UNIQUE NOT NULL CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-),
+    id    SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+) ,
     active     BOOLEAN     NOT NULL,
     password   TEXT        NOT NULL,
     first_name TEXT        NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE projects
 CREATE TABLE tasks
 (
     id                        SERIAL PRIMARY KEY,
-    project_id      INTEGER   NOT NULL REFERENCES projects (id),
+    project_id                INTEGER   NOT NULL REFERENCES projects (id),
     name                      TEXT      NOT NULL,
     description               TEXT      NOT NULL,
     priority                  INTEGER   NOT NULL,
@@ -58,8 +58,8 @@ CREATE TABLE members
 
 CREATE TABLE comments
 (
-    id      SERIAL PRIMARY KEY,
-    comment TEXT NOT NULL,
-    member_id      INTEGER   NOT NULL REFERENCES members (id),
-    task_id      INTEGER   NOT NULL REFERENCES tasks (id)
+    id        SERIAL PRIMARY KEY,
+    comment   TEXT    NOT NULL,
+    member_id INTEGER NOT NULL REFERENCES members (id),
+    task_id   INTEGER NOT NULL REFERENCES tasks (id)
 );
