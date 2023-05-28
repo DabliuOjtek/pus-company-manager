@@ -43,7 +43,7 @@ public class UserService {
         authorizationService.generateTokensForUser(currentUser);
     }
 
-    private User getUser(UserDetailsImpl userDetails) {
+    public User getUser(UserDetailsImpl userDetails) {
         return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new DefaultException("Użytkownik nie istnieje", HttpStatus.NOT_FOUND));
     }
