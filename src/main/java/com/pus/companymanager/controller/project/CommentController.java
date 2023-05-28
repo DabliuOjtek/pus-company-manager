@@ -2,7 +2,6 @@ package com.pus.companymanager.controller.project;
 
 import com.pus.companymanager.configuration.security.UserDetailsImpl;
 import com.pus.companymanager.dto.project.CommentDTO;
-import com.pus.companymanager.dto.project.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("projects/{projectId}/tasks/{taskId}")
+@RequestMapping("/projects/{projectId}/tasks/{taskId}/comments")
 public class CommentController {
 
     @GetMapping
@@ -26,7 +25,7 @@ public class CommentController {
         return new CommentDTO();
     }
 
-    @DeleteMapping(name = "/{commentId}")
+    @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable Long projectId, @PathVariable Long taskId, @PathVariable Long commentId,
                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
 

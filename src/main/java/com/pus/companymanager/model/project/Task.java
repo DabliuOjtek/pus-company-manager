@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,4 +24,7 @@ public class Task {
     private Integer priority;
     private LocalDateTime startDate;
     private LocalDateTime estimatedCompletionDate;
+
+    @OneToMany(mappedBy = "id")
+    private List<Comment> comments;
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("projects/{projectId}/members")
+ @RequestMapping("/projects/{projectId}/members")
 public class MembersController {
 
     @GetMapping
@@ -24,7 +24,7 @@ public class MembersController {
         return new MemberDTO();
     }
 
-    @DeleteMapping(name = "/{memberId}")
+    @DeleteMapping("/{memberId}")
     public void deleteTask(@PathVariable Long projectId, @PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     }

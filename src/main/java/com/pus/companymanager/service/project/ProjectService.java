@@ -9,6 +9,7 @@ import com.pus.companymanager.repository.project.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,12 +36,13 @@ public class ProjectService {
                 .orElseThrow(() -> new DefaultException("Brak projektu o podanym id", HttpStatus.NOT_FOUND));
     }
 
+    @Transactional
     public Long createProject(ProjectDTO newProject, UserDetailsImpl userDetails) {
-       Project project = mapProjectDTOToProject(newProject);
+        Project project = mapProjectDTOToProject(newProject);
 
-       Project createdProject = projectRepository.save(project);
-       memberService.createMember(createdProject, userDetails, true);
-       return createdProject.getId();
+        Project createdProject = projectRepository.save(project);
+        memberService.createMember(createdProject, userDetails, true);
+        return createdProject.getId();
     }
 
     public Long updateProject(Long projectId, ProjectDTO projectToUpdate, UserDetailsImpl userDetails) {
@@ -57,6 +59,11 @@ public class ProjectService {
         memberService.isMemberOfProject(projectId, userDetails);
 
         projectRepository.deleteById(projectId);
+    }
+
+    public Project getProjectById(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new DefaultException("Brak projektu o podanym id", HttpStatus.NOT_FOUND));
     }
 
     private ProjectDTO mapProjectToProjectDTO(Project project) {

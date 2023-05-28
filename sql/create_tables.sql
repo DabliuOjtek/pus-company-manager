@@ -51,8 +51,8 @@ CREATE TABLE members
 (
     id         SERIAL PRIMARY KEY,
     is_owner   BOOLEAN NOT NULL,
-    user_id    INTEGER NOT NULL REFERENCES projects (id),
-    project_id INTEGER NOT NULL REFERENCES users (id),
+    user_id    INTEGER NOT NULL REFERENCES users (id),
+    project_id INTEGER NOT NULL REFERENCES projects (id),
     CONSTRAINT members_pk UNIQUE (user_id, project_id)
 );
 

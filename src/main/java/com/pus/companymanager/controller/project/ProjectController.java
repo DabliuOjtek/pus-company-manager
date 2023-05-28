@@ -9,12 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("projects")
+@RequestMapping("/projects")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -24,7 +23,7 @@ public class ProjectController {
         return projectService.getAllUserProject(userDetails);
     }
 
-    @GetMapping(name = "/{projectId}")
+    @GetMapping("/{projectId}")
     public ProjectDTO getProject(@PathVariable Long projectId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return projectService.getProjectDetails(projectId, userDetails);
     }
@@ -35,12 +34,12 @@ public class ProjectController {
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
-    @PutMapping(name = "/{projectId}")
+    @PutMapping("/{projectId}")
     public Long updateProject(@PathVariable Long projectId, @RequestBody ProjectDTO projectToUpdate, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return projectService.updateProject(projectId, projectToUpdate, userDetails);
     }
 
-    @DeleteMapping(name = "/{projectId}")
+    @DeleteMapping("/{projectId}")
     public void deleteProject(@PathVariable Long projectId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         projectService.deleteProject(projectId, userDetails);
     }

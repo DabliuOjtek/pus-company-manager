@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,7 +22,8 @@ public class MemberService {
 
     public void isMemberOfProject(Long projectId, UserDetailsImpl userDetails) {
         User user = userService.getUser(userDetails);
-        if (!memberRepository.existsByUserIdAndProjectId(projectId, user.getId())) {
+
+        if (!memberRepository.existsByUserIdAndProjectId(user.getId(), projectId)) {
             throw new DefaultException("Użytkownik nie należy do projektu", HttpStatus.NOT_FOUND);
         }
     }
