@@ -37,9 +37,9 @@ public class MemberService {
         return memberRepository.findMembersByUser(user);
     }
 
-    public Member createMember(Project project, UserDetailsImpl userDetails, boolean isOwner) {
+    public void createMember(Project project, UserDetailsImpl userDetails, boolean isOwner) {
         User user = userService.getUser(userDetails);
-        return createMember(project, user, isOwner);
+        createMember(project, user, isOwner);
     }
 
     private Member createMember(Project project, User user, boolean isOwner) {
