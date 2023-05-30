@@ -69,6 +69,10 @@ public class TaskService {
         taskRepository.deleteById(taskId);
     }
 
+    public Task getTaskById(Long taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new DefaultException("Brak zadania o podanym id", HttpStatus.NOT_FOUND));
+    }
 
     private TaskDTO mapTaskToTaskDTO(Task task) {
         return TaskDTO.builder()

@@ -6,6 +6,7 @@ import com.pus.companymanager.exception.DefaultException;
 import com.pus.companymanager.model.project.Member;
 import com.pus.companymanager.model.project.Project;
 import com.pus.companymanager.model.user.User;
+import com.pus.companymanager.repository.project.CommentRepository;
 import com.pus.companymanager.repository.project.MemberRepository;
 import com.pus.companymanager.repository.project.ProjectRepository;
 import com.pus.companymanager.service.authorization.user.UserService;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private MemberRepository memberRepository;
+    private CommentRepository commentRepository;
     private UserService userService;
     private ProjectRepository projectRepository;
 
@@ -30,6 +32,21 @@ public class MemberService {
         if (!memberRepository.existsByUserIdAndProjectId(user.getId(), projectId)) {
             throw new DefaultException("Użytkownik nie należy do projektu", HttpStatus.NOT_FOUND);
         }
+    }
+
+    public void isMemberOfComment(Long commentId, UserDetailsImpl userDetails) {
+        User user = userService.getUser(userDetails);
+
+        if (!commentRepository.existsByMemberIdAndId(user.getId(), commentId)) {
+            throw new DefaultException("Komentarz nie należy do użytkownika", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public Member getMemberForProject(UserDetailsImpl userDetails, Long projectId) {
+        User user = userService.getUser(userDetails);
+
+        return memberRepository.findByUserIdAndProjectId(user.getId(), projectId)
+                .orElseThrow(() -> new DefaultException("Brak użytkownika w projekcie", HttpStatus.NOT_FOUND));
     }
 
     public List<Member> getAllMembershipForUser(UserDetailsImpl userDetails) {
