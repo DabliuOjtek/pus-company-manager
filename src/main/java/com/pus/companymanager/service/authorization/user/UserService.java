@@ -44,7 +44,11 @@ public class UserService {
     }
 
     public User getUser(UserDetailsImpl userDetails) {
-        return userRepository.findByEmail(userDetails.getUsername())
+        return getUserByEmail(userDetails.getUsername());
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new DefaultException("Użytkownik nie istnieje", HttpStatus.NOT_FOUND));
     }
 }
