@@ -24,12 +24,12 @@ public class MembersController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createTask(@PathVariable Long projectId, @RequestBody MemberDTO newMember, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<Long> createMember(@PathVariable Long projectId, @RequestBody MemberDTO newMember, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return new ResponseEntity<Long>(memberService.addProjectMember(projectId, newMember, userDetails), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{memberId}")
-    public void deleteTask(@PathVariable Long projectId, @PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public void deleteMember(@PathVariable Long projectId, @PathVariable Long memberId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         memberService.deleteMemberOfProject(projectId, memberId, userDetails);
     }
 }
