@@ -24,9 +24,9 @@ public class TaskService {
 
     public List<TaskDTO> getTasks(Long projectId, UserDetailsImpl userDetails) {
         memberService.isMemberOfProject(projectId, userDetails);
-        Project project = projectService.getProjectById(projectId);
 
-        return project.getTasks().stream()
+        return taskRepository.findAllByProjectId(projectId)
+                .stream()
                 .map(this::mapTaskToTaskDTO)
                 .collect(Collectors.toList());
     }
@@ -40,13 +40,33 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO createTask(Long projectId, TaskDTO newTask, UserDetailsImpl userDetails) {
+    public Long createTaskInProject(Long projectId, TaskDTO newTask, UserDetailsImpl userDetails) {
+        memberService.isMemberOfProject(projectId, userDetails);
+        Project project = projectService.getProjectById(projectId);
+
+        Task task = mapTaskDTOToTask(newTask, project);
+        Task createdTask = taskRepository.save(task);
+
+        return createdTask.getId();
+    }
+
+
+    public Long updateTask(Long projectId, Long taskId, TaskDTO updatedTask, UserDetailsImpl userDetails) {
+        memberService.isMemberOfProject(projectId, userDetails);
+        Project project = projectService.getProjectById(projectId);
+
+        Task task = mapTaskDTOToTask(updatedTask, project);
+        task.setId(taskId);
+
+        Task savedUpdatedTask = taskRepository.save(task);
+
+        return savedUpdatedTask.getId();
+    }
+
+    public void deleteTask(Long projectId, Long taskId, UserDetailsImpl userDetails) {
         memberService.isMemberOfProject(projectId, userDetails);
 
-        Task task = mapTaskDTOToTask(newTask);
-        taskRepository.save(task);
-
-        return newTask;
+        taskRepository.deleteById(taskId);
     }
 
 
@@ -60,13 +80,14 @@ public class TaskService {
                 .build();
     }
 
-    private Task mapTaskDTOToTask(TaskDTO task) {
+    private Task mapTaskDTOToTask(TaskDTO task, Project project) {
         return Task.builder()
                 .name(task.getName())
                 .description(task.getDescription())
                 .priority(task.getPriority())
                 .startDate(task.getStartDate())
                 .estimatedCompletionDate(task.getEstimatedCompletionDate())
+                .project(project)
                 .build();
     }
 }

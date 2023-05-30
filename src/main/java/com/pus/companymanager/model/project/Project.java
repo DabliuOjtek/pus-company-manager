@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -23,8 +22,4 @@ public class Project {
     private String description;
     private LocalDateTime startDate;
     private LocalDateTime completionDate;
-
-    @OneToMany()
-    @JoinColumn(name = "id")
-    private List<Task> tasks;
 }

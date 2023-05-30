@@ -29,18 +29,18 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskDTO> createTask(@PathVariable Long projectId, @RequestBody TaskDTO newTask, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        TaskDTO task = taskService.createTask(projectId, newTask, userDetails);
-        return new ResponseEntity<>(task, HttpStatus.CREATED);
+    public ResponseEntity<Long> createTaskInProject(@PathVariable Long projectId, @RequestBody TaskDTO newTask, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long taskId = taskService.createTaskInProject(projectId, newTask, userDetails);
+        return new ResponseEntity<>(taskId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{taskId}")
-    public TaskDTO updateTask(@PathVariable Long projectId, @PathVariable Long taskId, @RequestBody TaskDTO taskToUpdate, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return null;
+    public Long updateTask(@PathVariable Long projectId, @PathVariable Long taskId, @RequestBody TaskDTO updatedTask, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return taskService.updateTask(projectId, taskId, updatedTask, userDetails);
     }
 
     @DeleteMapping("/{taskId}")
     public void deleteTask(@PathVariable Long projectId, @PathVariable Long taskId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
+        taskService.deleteTask(projectId, taskId, userDetails);
     }
 }

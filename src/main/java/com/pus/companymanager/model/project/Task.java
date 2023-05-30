@@ -25,6 +25,10 @@ public class Task {
     private LocalDateTime startDate;
     private LocalDateTime estimatedCompletionDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     @OneToMany(mappedBy = "id")
     private List<Comment> comments;
 }
