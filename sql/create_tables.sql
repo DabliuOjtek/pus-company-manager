@@ -39,7 +39,7 @@ CREATE TABLE projects
 CREATE TABLE tasks
 (
     id                        SERIAL PRIMARY KEY,
-    project_id                INTEGER   NOT NULL REFERENCES projects (id),
+    project_id                INTEGER   NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
     name                      TEXT      NOT NULL,
     description               TEXT      NOT NULL,
     priority                  INTEGER   NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE members
     id         SERIAL PRIMARY KEY,
     is_owner   BOOLEAN NOT NULL,
     user_id    INTEGER NOT NULL REFERENCES users (id),
-    project_id INTEGER NOT NULL REFERENCES projects (id),
+    project_id INTEGER NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
     CONSTRAINT members_pk UNIQUE (user_id, project_id)
 );
 
@@ -60,6 +60,6 @@ CREATE TABLE comments
 (
     id        SERIAL PRIMARY KEY,
     comment   TEXT    NOT NULL,
-    member_id INTEGER NOT NULL REFERENCES members (id),
-    task_id   INTEGER NOT NULL REFERENCES tasks (id)
+    member_id INTEGER NOT NULL REFERENCES members (id) ON DELETE CASCADE,
+    task_id   INTEGER NOT NULL REFERENCES tasks (id) ON DELETE CASCADE
 );

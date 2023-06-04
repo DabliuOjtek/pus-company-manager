@@ -44,7 +44,7 @@ public class CommentService {
 
     public void deleteComment(Long projectId, Long commentId, UserDetailsImpl userDetails) {
         memberService.isMemberOfProject(projectId, userDetails);
-        memberService.isMemberOfComment(commentId, userDetails);
+        memberService.isMemberOfComment(commentId, projectId, userDetails);
 
         commentRepository.deleteById(commentId);
     }
