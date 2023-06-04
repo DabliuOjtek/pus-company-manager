@@ -34,10 +34,10 @@ public class MemberService {
         }
     }
 
-    public void isMemberOfComment(Long commentId, UserDetailsImpl userDetails) {
-        User user = userService.getUser(userDetails);
+    public void isMemberOfComment(Long commentId, Long projectId, UserDetailsImpl userDetails) {
+        Member member = getMemberForProject(userDetails, projectId);
 
-        if (!commentRepository.existsByMemberIdAndId(user.getId(), commentId)) {
+        if (!commentRepository.existsByMemberIdAndId(member.getId(), commentId)) {
             throw new DefaultException("Komentarz nie należy do użytkownika", HttpStatus.UNAUTHORIZED);
         }
     }
