@@ -29,6 +29,6 @@ public class Task {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "id", orphanRemoval = true)
     private List<Comment> comments;
 }
